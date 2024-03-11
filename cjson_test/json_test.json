@@ -1,0 +1,26 @@
+{
+	"name":	"MQ",
+	"age":	25,
+	"height":	183.52,
+	"gender":	false,
+	"address":	{
+		"country":	"China",
+		"zip-code":	123456
+	},
+	"subject":	["政治", "数学", "英语", "专业课"],
+	"time":	[123, 456, 789, 150],
+	"grade":	[66.51, 118.52, 61.53, 128.54],
+	"student":	[{
+			"name":	"张三",
+			"age":	24,
+			"gender":	true
+		}, {
+			"name":	"李四",
+			"age":	25,
+			"gender":	true
+		}, {
+			"name":	"王五",
+			"age":	26,
+			"gender":	true
+		}]
+}
