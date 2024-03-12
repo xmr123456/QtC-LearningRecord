@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <ncftp.h>
+
+FTPLibraryInfo li;
+FTPConnectionInfo ci;
+
+int main()
+{
+    int ret;
+    FTPConnectionInfo connInfo;
+	FTPLibraryInfo libInfo;
+	const char *remoteHost = "192.168.10.9";//FTP服务器IP
+	const char *remotePathNameOfFile = "test.txt";//FTP服务器文件名称
+	const char *localDirectory = "/home/xmr/QtC-LearningRecord/libftp_test";//本地目录
+
+    ret = FTPInitLibrary(&libInfo);
+	if (ret < 0) {
+		printf("simpleget: init library error %d (%s).\n", ret, FTPStrError(ret));
+		return -1;
+	}
+
+    ret = FTPInitConnectionInfo(&libInfo, &connInfo, kDefaultFTPBufSize);
+	if (ret < 0) {
+		printf("simpleget: init connection info error %d (%s).\n", ret, FTPStrError(ret));
+		return -1;
+	}
+
+    strncpy(connInfo.host, remoteHost, sizeof(connInfo.host) - 1);
+	strncpy(connInfo.user, "xmr", sizeof(connInfo.user) - 1);
+	strncpy(connInfo.pass, "123456", sizeof(connInfo.pass) - 1);
+
+    if ((ret = FTPOpenHost(&connInfo)) < 0) {
+		FTPPerror(&connInfo, ret, 0, "Could not open", connInfo.host);
+        return -1;
+	} 
+
+    //获取FTP服务器文件列表
+	ret = FTPList(&connInfo, 1, 1, NULL);
+	if (ret < 0) {
+		FTPPerror(&connInfo, ret, kErrCouldNotStartDataTransfer, "Could not get", remotePathNameOfFile);
+        FTPCloseHost(&connInfo);
+        return -1;
+	}
+
+    //FTP下载文件
+    ret = FTPGetOneFile3(&connInfo, "test.txt", "download_test.txt", kTypeAscii, -1, kResumeNo, kAppendNo, kDeleteNo, kNoFTPConfirmResumeDownloadProc, 0);
+
+    //FTP上传文件
+    ret = FTPPutOneFile3(&connInfo, "download_test.txt", "upload_test.txt", kTypeAscii, -1, kAppendNo, NULL, NULL, kResumeNo, kDeleteNo, kNoFTPConfirmResumeUploadProc, 0);
+
+    FTPCloseHost(&connInfo);
+    return 0;
+}
